@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service  # 管理谷歌驱动
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
 
 
 def init_browser():
@@ -41,6 +42,14 @@ def input_text(driver, xpath, text, timeout=10):
     :param timeout: 等待时间（秒）
     """
     input_field = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, xpath)))
+    # 获取输入框当前的值
+    current_value = input_field.get_attribute('value')
+
+    # 检查输入框是否有文字
+    if current_value:
+        # 若有文字，先清除
+        input_field.clear()
+        print("输入框原有文字已清除")
     input_field.send_keys(text)
 
 
@@ -75,26 +84,27 @@ def login_process(driver):
     click_element(driver,'/html/body/div[1]/div[2]/div[2]/div[3]/div[2]/div/div[1]/div[2]/div[1]/span[1]/span/span/span[1]')
     # 从备案库选择产品
     click_element(driver,'/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[2]/span[2]')
+
+
     # 输入产品名称
     time.sleep(1)
     input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[2]/div/div[2]/input','大白菜')
     time.sleep(1)
     # 设置生产厂商
-    input_text(driver,
-               '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[4]/div/div[2]/input',
-               '新罗区谢贤福蔬菜摊')
+    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[4]/div/div[2]/input','新罗区谢贤福蔬菜摊')
     time.sleep(1)
     # 点击查询
     click_element(driver,
                   '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[2]/td[3]/span[1]/span')
     time.sleep(2)
     # 输入日期
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[6]/div/div/div[3]/input[1]','2025-02-12')
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[7]/div/div/div[2]/input','20250212')
+    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[6]/div/div/div[3]/input[1]','2025-02-13')
+    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[7]/div/div/div[2]/input','20250213')
     # 输入数量
     input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[8]/div/div/div[3]/input[1]','10')
-    # 点击添加
+    # 点击添加进货
     click_element(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[12]/a')
+
 
     # 进入进货台账
     click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[1]/span[2]')
@@ -109,7 +119,10 @@ def login_process(driver):
     input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[2]/div[2]/input','闽FZN138')
     time.sleep(1)
     input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[3]/div[2]/input','13950826868')
-    click_element(driver,'/html/body/div[9]/div[2]/div[2]/span[2]/span/span/span[3]')
+
+    # 提交操作
+    # click_element(driver,'/html/body/div[9]/div[2]/div[2]/span[2]/span/span/span[3]')
+
 
 
 
