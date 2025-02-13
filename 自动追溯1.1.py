@@ -22,7 +22,7 @@ def init_browser():
     return driver
 
 
-def click_element(driver, xpath, timeout=10):
+def click_element(driver, xpath, timeout=30):
     """
     等待元素可点击并执行点击操作
     :param driver: WebDriver实例
@@ -33,7 +33,7 @@ def click_element(driver, xpath, timeout=10):
     element.click()
 
 
-def input_text(driver, xpath, text, timeout=10):
+def input_text(driver, xpath, text, timeout=30):
     """
     等待输入框可见并输入文本
     :param driver: WebDriver实例
@@ -49,7 +49,6 @@ def input_text(driver, xpath, text, timeout=10):
     if current_value:
         # 若有文字，先清除
         input_field.clear()
-        print("输入框原有文字已清除")
     input_field.send_keys(text)
 
 
@@ -80,48 +79,115 @@ def login_process(driver):
     click_element(driver,'//*[@id="jquery-accordion-menu"]/ul/li[2]/a')
     # 进入进货登记
     click_element(driver,'//*[@id="jquery-accordion-menu"]/ul/li[2]/ul/li[2]/ul/li[1]/a')
-    # 新增
-    click_element(driver,'/html/body/div[1]/div[2]/div[2]/div[3]/div[2]/div/div[1]/div[2]/div[1]/span[1]/span/span/span[1]')
-    # 从备案库选择产品
-    click_element(driver,'/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[2]/span[2]')
 
 
-    # 输入产品名称
-    time.sleep(1)
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[2]/div/div[2]/input','大白菜')
-    time.sleep(1)
-    # 设置生产厂商
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[4]/div/div[2]/input','新罗区谢贤福蔬菜摊')
-    time.sleep(1)
-    # 点击查询
-    click_element(driver,
-                  '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[2]/td[3]/span[1]/span')
-    time.sleep(2)
-    # 输入日期
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[6]/div/div/div[3]/input[1]','2025-02-13')
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[7]/div/div/div[2]/input','20250213')
-    # 输入数量
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[8]/div/div/div[3]/input[1]','10')
-    # 点击添加进货
-    click_element(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[12]/a')
 
 
-    # 进入进货台账
-    click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[1]/span[2]')
-    # 设置供货方
-    click_element(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td[3]/div/div[2]')
-    input_text(driver,'/html/body/div[15]/div/div[1]/div[2]/input','新罗区谢贤福蔬菜摊')
-    click_element(driver, '/html/body/div[15]/div/span[1]/span/span/span[3]')
-    time.sleep(2)
-    click_element(driver, '/html/body/div[15]/div/div[5]/div[3]/div[2]/div/table/tbody/tr/td[1]')
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[1]/div[2]/input','福建万鹭贸易有限公司')
-    time.sleep(1)
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[2]/div[2]/input','闽FZN138')
-    time.sleep(1)
-    input_text(driver,'/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[3]/div[2]/input','13950826868')
 
-    # 提交操作
-    # click_element(driver,'/html/body/div[9]/div[2]/div[2]/span[2]/span/span/span[3]')
+
+
+    # 读取 Excel 文件
+    file_path = 'data2025-02-1126.xlsx'
+    df = pd.read_excel(file_path)
+
+    # 打印数据框的前几行，确认数据加载是否成功
+    print("数据框预览：")
+    print(df.head())
+
+    # 统计所有不重复的生产商数量
+    unique_producers = df['生产商'].unique()
+    num_producers = len(unique_producers)
+
+    # 外层循环：遍历所有不重复的生产商
+    for producer in unique_producers:
+        print(f"\n正在处理的生产商：{producer}")
+        # 新增
+        click_element(driver,
+                      '/html/body/div[1]/div[2]/div[2]/div[3]/div[2]/div/div[1]/div[2]/div[1]/span[1]/span/span/span[1]')
+        # 从备案库选择产品
+        click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[2]/span[2]')
+        time.sleep(1)
+        # 设置生产厂商
+        input_text(driver,
+                   '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[4]/div/div[2]/input',
+                   producer)
+
+        # 内层循环：针对当前生产商的进货记录进行迭代
+        # 使用 groupby 按生产商分组，获取当前生产商的所有记录
+        producer_records = df[df['生产商'] == producer]
+
+        # 遍历当前生产商的每一行记录
+        for index, row in producer_records.iterrows():
+            # 获取产品名称、进货数量和生产商信息
+            product_name = row['产品名称'] if not pd.isna(row['产品名称']) else "未知产品"
+            quantity = row['进货数量'] if not pd.isna(row['进货数量']) else "未知数量"
+            df['日期'] = pd.to_datetime(df['日期'])
+            date = ''
+            data1 = ''
+            # 遍历每一行
+            for index1, row1 in df.iterrows():
+                if pd.isna(row1['日期']):
+                    date = "未知数量"
+                else:
+                    date = row1['日期'].strftime('%Y-%m-%d')
+                    date1 = row1['日期'].strftime('%Y%m%d')
+            # 输出当前处理的记录详情
+            print(f"处理记录：产品名称={product_name}, 进货数量={quantity}, 生产商={producer} ,日期={date, date1}")
+
+            # 输入产品名称
+            time.sleep(1)
+            input_text(driver,
+                       '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[1]/td[2]/div/div[2]/input',
+                       product_name)
+
+            time.sleep(1)
+            # 点击查询
+            click_element(driver,
+                          '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[1]/form/table/tbody/tr[2]/td[3]/span[1]/span')
+            time.sleep(2)
+            # 输入日期
+            input_text(driver,
+                       '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[6]/div/div/div[3]/input[1]',
+                       date)
+            input_text(driver,
+                       '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[7]/div/div/div[2]/input',
+                       date1)
+            # 输入数量
+            input_text(driver,
+                       '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[8]/div/div/div[3]/input[1]',
+                       quantity)
+            # 点击添加进货
+            click_element(driver,
+                          '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[12]/a')
+
+
+        # 进入进货台账
+        click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[1]/span[2]')
+        # 设置供货方
+        click_element(driver,
+                      '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td[3]/div/div[2]')
+        time.sleep(2)
+        input_text(driver, '/html/body/div[21]/div/div[1]/div[2]/input', producer)
+        time.sleep(1)
+        # 点击查询
+        click_element(driver, '/html/body/div[21]/div/span[1]/span/span/span[3]')
+        time.sleep(2)
+        click_element(driver, '/html/body/div[21]/div/div[5]/div[3]/div[2]/div/table/tbody/tr/td[1]/span')
+        input_text(driver,
+                   '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[1]/div[2]/input',
+                   '福建万鹭贸易有限公司')
+        time.sleep(1)
+        input_text(driver,
+                   '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[2]/div[2]/input',
+                   '闽FZN138')
+        time.sleep(1)
+        input_text(driver,
+                   '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[3]/div[2]/input',
+                   '13950826868')
+        # 提交操作
+        click_element(driver, '/html/body/div[9]/div[2]/div[2]/span[2]/span/span/span[3]')
+
+
 
 
 

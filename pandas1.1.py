@@ -25,6 +25,16 @@ for producer in unique_producers:
         # 获取产品名称、进货数量和生产商信息
         product_name = row['产品名称'] if not pd.isna(row['产品名称']) else "未知产品"
         quantity = row['进货数量'] if not pd.isna(row['进货数量']) else "未知数量"
-
+        # date = row['日期'] if not pd.isna(row['日期'].dt.strftime('%Y-%m-%d')) else "未知数量"
+        df['日期'] = pd.to_datetime(df['日期'])
+        date = ''
+        data1 = ''
+        # 遍历每一行
+        for index1, row1 in df.iterrows():
+            if pd.isna(row1['日期']):
+                date = "未知数量"
+            else:
+                date = row1['日期'].strftime('%Y-%m-%d')
+                data1 = row1['日期'].strftime('%Y%m%d')
         # 输出当前处理的记录详情
-        print(f"处理记录：产品名称={product_name}, 进货数量={quantity}, 生产商={producer}")
+        print(f"处理记录：产品名称={product_name}, 进货数量={quantity}, 生产商={producer} ,日期={date,data1}")
