@@ -105,10 +105,8 @@ def login_process(driver):
     # 等待3秒手动输入验证码
     time.sleep(8)
     click_element(driver,'//*[@id="submit1"]')
-    # 进入销售追溯
-    click_element(driver,'//*[@id="jquery-accordion-menu"]/ul/li[2]/a')
-    # 进入进货登记
-    click_element(driver,'//*[@id="jquery-accordion-menu"]/ul/li[2]/ul/li[2]/ul/li[1]/a')
+
+    # click_element(driver, '//*[@id="jquery-accordion-menu"]/ul/li[2]/ul/li[2]/ul/li[1]/a')
 
 
 
@@ -131,11 +129,19 @@ def login_process(driver):
     # 外层循环：遍历所有不重复的生产商
     for producer in unique_producers:
         print(f"\n正在处理的生产商：{producer}")
+
+        # 刷新
+        driver.refresh()
+        # 进入销售追溯
+        click_element(driver, '//*[@id="jquery-accordion-menu"]/ul/li[2]/a')
+        # 进入进货登记
+        click_element(driver, '/html/body/div[1]/div[2]/div[1]/div[2]/div/div/div/ul/li[2]/ul/li[2]/ul/li[1]/a')
         # 新增
         click_element(driver,
                       '/html/body/div[1]/div[2]/div[2]/div[3]/div[2]/div/div[1]/div[2]/div[1]/span[1]/span/span/span[1]')
+        time.sleep(1)
         # 从备案库选择产品
-        click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[2]/span[2]')
+        click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[2]')
         time.sleep(1)
         # 设置生产厂商
         input_text(driver,
@@ -218,24 +224,20 @@ def login_process(driver):
 
         print(f'是否找到父元素{parent_element}')
         print(parent_element.get_attribute('outerHTML'))
-        time.sleep(5)
+        time.sleep(1)
         input_element = parent_element.find_element(By.CSS_SELECTOR,'[data-dojo-attach-point="textbox,focusNode"]')
         print(f'是否找到元素{input_element}')
         print(input_element.get_attribute('outerHTML'))
-        element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(input_element))
-        element.click()
         time.sleep(1)
+        # input_element.click()
         # input_text(driver, "//div[starts-with(@id, 'dijit_form_ValidationTextBox')]", producer)
 
-        input_field = WebDriverWait(driver, 10).until(EC.visibility_of_element_located(input_element))
         # 获取输入框当前的值
-        current_value = input_field.get_attribute('value')
+        current_value = input_element.get_attribute('value')
+        print(f'文字：{current_value}')
 
-        # 检查输入框是否有文字
-        if current_value:
-            # 若有文字，先清除
-            input_field.clear()
-        input_field.send_keys(producer)
+        input_element.send_keys(producer)
+
 
 
 
@@ -258,6 +260,9 @@ def login_process(driver):
                    '13950826868')
         # 提交操作
         click_element(driver, '/html/body/div[9]/div[2]/div[2]/span[2]/span/span/span[3]')
+        # 关闭
+        time.sleep(1)
+
 
 
 
