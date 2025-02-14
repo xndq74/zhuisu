@@ -31,7 +31,17 @@ def click_element(driver, xpath, timeout=30):
     """
     element = WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.XPATH, xpath)))
     element.click()
-
+    return element
+def click_element_data(driver, data, timeout=30):
+    """
+    等待元素可点击并执行点击操作
+    :param driver: WebDriver实例
+    :param data: 元素的data
+    :param timeout: 等待时间（秒）
+    """
+    element = WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.CSS_SELECTOR, data)))
+    element.click()
+    return element
 
 def input_text(driver, xpath, text, timeout=30):
     """
@@ -50,6 +60,26 @@ def input_text(driver, xpath, text, timeout=30):
         # 若有文字，先清除
         input_field.clear()
     input_field.send_keys(text)
+    return input_field
+
+def input_text_data(driver, data, text, timeout=30):
+    """
+    等待输入框可见并输入文本
+    :param driver: WebDriver实例
+    :param data: 元素的data
+    :param text: 需要输入的文本
+    :param timeout: 等待时间（秒）
+    """
+    input_field = WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.CSS_SELECTOR, data)))
+    # 获取输入框当前的值
+    current_value = input_field.get_attribute('value')
+
+    # 检查输入框是否有文字
+    if current_value:
+        # 若有文字，先清除
+        input_field.clear()
+    input_field.send_keys(text)
+    return  input_field
 
 
 def login_process(driver):
@@ -160,19 +190,61 @@ def login_process(driver):
             click_element(driver,
                           '/html/body/div[9]/div[2]/div[1]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div/table/tbody/tr/td[12]/a')
 
-
         # 进入进货台账
+        time.sleep(1)
         click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[1]/span[2]')
-        # 设置供货方
         click_element(driver,
                       '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td[3]/div/div[2]')
-        time.sleep(2)
-        input_text(driver, '/html/body/div[21]/div/div[1]/div[2]/input', producer)
+        time.sleep(1)
+        # # 切换
+        # click_element(driver,'/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[2]/span[2]')
+        # time.sleep(1)
+        # click_element(driver, '/html/body/div[9]/div[2]/div[1]/div[1]/div[4]/div/div[1]/span[2]')
+        #
+        # # 输入供应商
+        # click_element(driver,
+        #               '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[1]/td[3]/div/div[2]')
+        # time.sleep(1)
+        # click_element(driver,'/html/body/div[15]/div/div[1]/div[2]/input')
+        # time.sleep(1)
+        # input_text(driver,'/html/body/div[13]/div/div[1]/div[2]/input',producer)
+        #-----------------------------------------------------------------------------
+        # 设置供货方 用ID的方式来查找
+        time.sleep(1)
+        #匹配dijit_form_ValidationTextBox开头的id
+        # a1 = click_element(driver,"//div[starts-with(@id, 'dijit_form_ValidationTextBox')]")
+        # print(f'是否找到元素A1：{a1}')
+        parent_element = driver.find_element(By.ID,'widget_stockParmeter_add_form_supplyEntName_dropdown')
+
+        print(f'是否找到父元素{parent_element}')
+        print(parent_element.get_attribute('outerHTML'))
+        time.sleep(5)
+        input_element = parent_element.find_element(By.CSS_SELECTOR,'[data-dojo-attach-point="textbox,focusNode"]')
+        print(f'是否找到元素{input_element}')
+        print(input_element.get_attribute('outerHTML'))
+        element = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(input_element))
+        element.click()
+        time.sleep(1)
+        # input_text(driver, "//div[starts-with(@id, 'dijit_form_ValidationTextBox')]", producer)
+
+        input_field = WebDriverWait(driver, 10).until(EC.visibility_of_element_located(input_element))
+        # 获取输入框当前的值
+        current_value = input_field.get_attribute('value')
+
+        # 检查输入框是否有文字
+        if current_value:
+            # 若有文字，先清除
+            input_field.clear()
+        input_field.send_keys(producer)
+
+
+
+
         time.sleep(1)
         # 点击查询
-        click_element(driver, '/html/body/div[21]/div/span[1]/span/span/span[3]')
-        time.sleep(2)
-        click_element(driver, '/html/body/div[21]/div/div[5]/div[3]/div[2]/div/table/tbody/tr/td[1]/span')
+        click_element(driver, '/html/body/div[15]/div/span[1]/span/span')
+        time.sleep(1)
+        click_element(driver, '/html/body/div[15]/div/div[5]/div[3]/div[2]/div/table/tbody/tr')
         input_text(driver,
                    '/html/body/div[9]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]/form/table/tbody/tr[4]/td/div[1]/div[2]/input',
                    '福建万鹭贸易有限公司')
